@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Country Weather Page";
+}
+
+<h2><strong>Country Weather Page</strong></h2>
+<div class="weatherArea">
+    <div class="area-table-input">
+        <div class="table-input">
+            <div class="table-input-row required">
+                <div class="table-input-cell"><label>Country</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell">@Html.DropDownList("ddlCountry", (IEnumerable<SelectListItem>)ViewBag.LoanAmountType, "-Select-", new { @class = "form-control", @id = "countryWeather" })</div>
+            </div>
+            <div class="table-input-row required">
+                <div class="table-input-cell"><label>City</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><select class="form-control" id="cityWeather"></select></div>
+            </div>
+        </div>
+    </div>
+    <div class="area-table-input" id="areaCurrWeather" style="display:none">
+        <div class="table-input">
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Location</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="location" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Time</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="time" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Wind</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="wind" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Visibility</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="visibility" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Sky Condition</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="skyCondition" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Temperature</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="temperature" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Dew Point</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="dewPoint" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Relative Humidity</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="relativeHumidity" class="form-control" disabled="disabled" /></div>
+            </div>
+            <div class="table-input-row">
+                <div class="table-input-cell"><label>Pressure</label></div>
+                <div class="table-input-cell">:</div>
+                <div class="table-input-cell"><input type="text" id="pressure" class="form-control" disabled="disabled" /></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        $("#cityWeather").append(new Option("-Select-", ""));
+        $("#countryWeather").change(function () {
+            document.getElementById("cityWeather").innerHTML = "";
+            $("#cityWeather").append(new Option("-Select-", ""));
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCityByCountry", "Home")',
+                data: { countryID: $(this).val() },
+                success: function (d) {
+                    if (d.success) {
+                        $("#areaCurrWeather").hide();
+                        for (var i = 0; i < d.data.length; i++) {
+                            $("#cityWeather").append(new Option(d.data[i].cityName, d.data[i].cityName));
+                        }
+                    }
+                }
+            });
+        });
+
+        $("#cityWeather").change(function () {
+            $("#location").val("");
+            $("#time").val("");
+            $("#wind").val("");
+            $("#visibility").val("");
+            $("#skyCondition").val("");
+            $("#temperature").val("");
+            $("#dewPoint").val("");
+            $("#relativeHumidity").val("");
+            $("#pressure").val("");
+            if ($(this).val() != "") {
+                $("#areaCurrWeather").show();
+                $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetWeatherByCity", "Home")',
+                data: { city: $(this).val() },
+                success: function (d) {
+                    if (d.success) {
+                        $("#location").val(d.data.location);
+                        $("#time").val(d.data.time);
+                        $("#wind").val(d.data.wind);
+                        $("#visibility").val(d.data.visibility);
+                        $("#skyCondition").val(d.data.skyCondition);
+                        $("#temperature").val(d.data.temperature);
+                        $("#dewPoint").val(d.data.dewPoint);
+                        $("#relativeHumidity").val(d.data.relativeHumidity);
+                        $("#pressure").val(d.data.pressure);
+                    }
+                }
+            });
+            } else {
+                $("#areaCurrWeather").hide();
+            }
+        })
+
+    </script>
+}

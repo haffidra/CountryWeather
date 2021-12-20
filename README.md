@@ -3,7 +3,7 @@ Country weather
 
 
 Task #1
-Using Sequential searching, because no need sorting data first. With ignoring sorting data, searching become faster.
+Using Sequential searching, because no need sorting data first. The task is to search patient contain part of patient name, then need to look all element of array. With ignoring sorting data, searching become faster. If using Binary Search, the data need to be sorted first and it'll take some times and not for search patient contain part of patient name.
 
 
 Task #2
